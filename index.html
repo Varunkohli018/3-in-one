@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Online HTML / CSS / JS Editor</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#111827; --muted:#334155; --text:#e5e7eb; --accent:#3b82f6;
+    --tab:#1f2937; --tab-active:#374151;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:Inter,system-ui,Arial,Helvetica,sans-serif;
+    display:flex; flex-direction:column;
+  }
+  /* Top bar */
+  header{
+    height:56px; min-height:56px; max-height:56px;
+    display:flex; align-items:center; gap:12px;
+    padding:0 14px; border-bottom:1px solid var(--muted);
+    background:linear-gradient(180deg,#0b1023 0,#0f172a 100%);
+  }
+  header h1{margin:0; font-size:14px; font-weight:600; opacity:.9}
+  .btn{
+    margin-left:auto; padding:8px 14px; border:0; border-radius:10px;
+    background:var(--accent); color:#fff; font-weight:600; cursor:pointer;
+  }
+  .container{flex:1; display:flex; min-height:0}
+  /* Left editor pane */
+  .left{
+    width:50%; min-width:330px; border-right:1px solid var(--muted);
+    display:flex; flex-direction:column; background:var(--panel);
+  }
+  .tabs{display:flex; gap:6px; padding:8px; border-bottom:1px solid var(--muted)}
+  .tab{
+    padding:8px 12px; border-radius:8px; background:var(--tab);
+    color:#cbd5e1; font-size:13px; cursor:pointer; user-select:none;
+    border:1px solid #1f2937;
+  }
+  .tab.active{background:var(--tab-active); color:#fff; border-color:#334155}
+  .editors{
+    position:relative;
+    height:calc(100vh - 56px - 49px); 
+  }
+  textarea{
+    position:absolute; inset:0; width:100%; height:100%;
+    background:#0b1023; color:#e5e7eb; border:0; outline:0;
+    padding:14px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:14px; line-height:1.5; display:none; resize:none;
+  }
+  textarea.active{display:block}
+  /* Right preview pane */
+  .right{flex:1; background:#ffffff; position:relative}
+  iframe{width:100%; height:100%; border:0; background:#fff}
+  .placeholder{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:#666; font-size:16px; pointer-events:none;
+  }
+  @media (max-width:900px){
+    .container{flex-direction:column}
+    .left{width:100%; min-width:0; border-right:0; border-bottom:1px solid var(--muted)}
+    .editors{height:calc(100vh - 56px - 49px - 50vh)}
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Online HTML / CSS / JS Editor</h1>
+    <button class="btn" id="runBtn">▶ Run</button>
+  </header>
+
+  <div class="container">
+    <section class="left">
+      <div class="tabs">
+        <div class="tab active" data-target="html">index.html</div>
+        <div class="tab" data-target="css">style.css</div>
+        <div class="tab" data-target="js">script.js</div>
+      </div>
+      <div class="editors">
+        <textarea id="html" class="active" spellcheck="false"><h1>Hello from HTML</h1>
+<p>Edit your HTML here.</p></textarea>
+        
+        <textarea id="css" spellcheck="false">/* Edit your CSS here */
+body{font-family:system-ui,Arial,sans-serif}
+h1{color:#3b82f6; text-align:center}</textarea>
+
+        <textarea id="js" spellcheck="false">// Write your JavaScript here
+document.addEventListener("DOMContentLoaded", ()=>{
+  console.log("JS is running!");
+  alert("Hello from JS!");
+});</textarea>
+      </div>
+    </section>
+
+    <section class="right">
+      <div class="placeholder" id="ph">Click on "Run" to run the project</div>
+      <iframe id="preview" sandbox="allow-same-origin allow-scripts allow-forms allow-modals"></iframe>
+    </section>
+  </div>
+
+<script>
+  // Tabs logic
+  const tabs = document.querySelectorAll('.tab');
+  const htmlArea = document.getElementById('html');
+  const cssArea  = document.getElementById('css');
+  const jsArea   = document.getElementById('js');
+  tabs.forEach(t=>{
+    t.addEventListener('click',()=>{
+      tabs.forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const id=t.dataset.target;
+      htmlArea.classList.toggle('active', id==='html');
+      cssArea.classList.toggle('active',  id==='css');
+      jsArea.classList.toggle('active',   id==='js');
+      (id==='html'?htmlArea:id==='css'?cssArea:jsArea).focus();
+    });
+  });
+
+  // Build & run
+  const iframe = document.getElementById('preview');
+  const ph = document.getElementById('ph');
+  function run(){
+    const doc = `<!doctype html><html><head><meta charset="utf-8">
+<style>${cssArea.value||''}</style></head>
+<body>${htmlArea.value||''}
+<script>${jsArea.value||''}<\/script>
+</body></html>`;
+    iframe.srcdoc = doc;
+    ph.style.display = 'none';
+  }
+  document.getElementById('runBtn').addEventListener('click', run);
+
+  // Shortcuts
+  window.addEventListener('keydown', (e)=>{
+    if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); run(); }
+  });
+</script>
+</body>
+</html>
