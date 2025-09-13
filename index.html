@@ -29,9 +29,9 @@
     background:var(--accent); color:#fff; font-weight:600; cursor:pointer;
   }
   .container{flex:1; display:flex; min-height:0}
-  /* Left editor pane */
+  /* Only editor pane now */
   .left{
-    width:50%; min-width:330px; border-right:1px solid var(--muted);
+    width:100%; min-width:330px;
     display:flex; flex-direction:column; background:var(--panel);
   }
   .tabs{display:flex; gap:6px; padding:8px; border-bottom:1px solid var(--muted)}
@@ -43,7 +43,7 @@
   .tab.active{background:var(--tab-active); color:#fff; border-color:#334155}
   .editors{
     position:relative;
-    height:calc(100vh - 56px - 49px); 
+    flex:1;
   }
   textarea{
     position:absolute; inset:0; width:100%; height:100%;
@@ -52,18 +52,6 @@
     font-size:14px; line-height:1.5; display:none; resize:none;
   }
   textarea.active{display:block}
-  /* Right preview pane */
-  .right{flex:1; background:#ffffff; position:relative}
-  iframe{width:100%; height:100%; border:0; background:#fff}
-  .placeholder{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    color:#666; font-size:16px; pointer-events:none;
-  }
-  @media (max-width:900px){
-    .container{flex-direction:column}
-    .left{width:100%; min-width:0; border-right:0; border-bottom:1px solid var(--muted)}
-    .editors{height:calc(100vh - 56px - 49px - 50vh)}
-  }
 </style>
 </head>
 <body>
@@ -94,11 +82,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
 });</textarea>
       </div>
     </section>
-
-    <section class="right">
-      <div class="placeholder" id="ph">Click on "Run" to run the project</div>
-      <iframe id="preview" sandbox="allow-same-origin allow-scripts allow-forms allow-modals"></iframe>
-    </section>
   </div>
 
 <script>
@@ -119,17 +102,17 @@ document.addEventListener("DOMContentLoaded", ()=>{
     });
   });
 
-  // Build & run
-  const iframe = document.getElementById('preview');
-  const ph = document.getElementById('ph');
+  // Build & run → open in new page
   function run(){
     const doc = `<!doctype html><html><head><meta charset="utf-8">
 <style>${cssArea.value||''}</style></head>
 <body>${htmlArea.value||''}
 <script>${jsArea.value||''}<\/script>
 </body></html>`;
-    iframe.srcdoc = doc;
-    ph.style.display = 'none';
+    const newWin = window.open();
+    newWin.document.open();
+    newWin.document.write(doc);
+    newWin.document.close();
   }
   document.getElementById('runBtn').addEventListener('click', run);
 
