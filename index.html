@@ -28,6 +28,8 @@
     margin-left:auto; padding:8px 14px; border:0; border-radius:10px;
     background:var(--accent); color:#fff; font-weight:600; cursor:pointer;
   }
+
+  /* Container flex */
   .container{flex:1; display:flex; min-height:0}
   /* Only editor pane now */
   .left{
@@ -52,11 +54,116 @@
     font-size:14px; line-height:1.5; display:none; resize:none;
   }
   textarea.active{display:block}
+
+  /* Menu container & dropdown */
+  .menu-container {
+    position: relative;
+    margin-left: 10px;
+    margin-right: auto; /* So that Menu button stays left of Run button */
+  }
+
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--panel);
+    border: 1px solid var(--muted);
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    display: none;
+    min-width: 120px;
+    z-index: 1000;
+  }
+
+  .dropdown-item {
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text);
+    user-select: none;
+    border-bottom: 1px solid var(--muted);
+  }
+
+  .dropdown-item:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-item:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* Modal styles */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+  .modal {
+    background: var(--panel);
+    padding: 20px 30px;
+    border-radius: 10px;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    color: var(--text);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    position: relative;
+  }
+  .modal h2 {
+    margin-top: 0;
+    font-weight: 700;
+    font-size: 1.4em;
+  }
+  .modal h3 {
+    margin-top: 20px;
+    font-weight: 600;
+  }
+  .modal p {
+    margin: 10px 0;
+  }
+  .modal pre {
+    background: #1f2937;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.4;
+    user-select: text;
+  }
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 18px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .close-btn:hover {
+    color: var(--accent);
+  }
 </style>
 </head>
 <body>
   <header>
     <h1> HTML / CSS / JS Editor</h1>
+
+    <div class="menu-container">
+      <button class="btn" id="menuBtn">Menu ▼</button>
+      <div class="dropdown" id="dropdownMenu">
+        <div class="dropdown-item" data-action="read">Read</div>
+        <div class="dropdown-item" data-action="help">Help</div>
+        <div class="dropdown-item" data-action="about">About</div>
+      </div>
+    </div>
+
     <button class="btn" id="runBtn">▶ Run</button>
   </header>
 
@@ -82,6 +189,89 @@ document.addEventListener("DOMContentLoaded", ()=>{
 });</textarea>
       </div>
     </section>
+  </div>
+
+  <!-- Read Modal -->
+  <div class="modal-overlay" id="readModal">
+    <div class="modal">
+      <button class="close-btn" id="closeReadModalBtn">Close ✖</button>
+      <h2>Basic HTML Knowledge</h2>
+      <p>HTML (HyperText Markup Language) is the standard language for creating webpages. It uses tags to structure content.</p>
+      <p>Example:</p>
+      <pre>
+&lt;h1&gt;Hello World&lt;/h1&gt;
+&lt;p&gt;This is a paragraph.&lt;/p&gt;
+      </pre>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <button class="close-btn" id="closeHelpModalBtn">Close ✖</button>
+      <h2>Detailed HTML, CSS, and JavaScript Help</h2>
+
+      <h3>Common HTML Tags</h3>
+      <p>Some frequently used HTML tags:</p>
+      <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Page Title&lt;/title&gt;
+    &lt;meta charset="UTF-8"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Heading 1&lt;/h1&gt;
+    &lt;h2&gt;Heading 2&lt;/h2&gt;
+    &lt;p&gt;Paragraph&lt;/p&gt;
+    &lt;a href="url"&gt;Link&lt;/a&gt;
+    &lt;img src="image.jpg" alt="desc"&gt;
+    &lt;ul&gt;&lt;li&gt;List item&lt;/li&gt;&lt;/ul&gt;
+    &lt;div&gt;Division&lt;/div&gt;
+    &lt;span&gt;Span&lt;/span&gt;
+    &lt;form&gt;Form&lt;/form&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+      </pre>
+
+      <h3>Common CSS Properties</h3>
+      <p>Here are some key CSS properties and their purposes:</p>
+      <pre>
+color: value;           /* Text color */
+background-color: value; /* Background color */
+font-size: value;       /* Text size */
+margin: value;          /* Outside spacing */
+padding: value;         /* Inside spacing */
+border: value;          /* Border style */
+display: value;         /* Layout type (block, inline, flex, etc.) */
+position: value;        /* Positioning (static, relative, absolute, fixed) */
+width: value;           /* Element width */
+height: value;          /* Element height */
+flex: value;            /* Flexbox flexibility */
+overflow: value;        /* Content overflow */
+      </pre>
+
+      <h3>JavaScript Basics</h3>
+      <p>JavaScript allows you to add interactivity:</p>
+      <pre>
+// Selecting an element
+const btn = document.getElementById('myButton');
+
+// Adding an event listener
+btn.addEventListener('click', () => {
+  alert('Button clicked!');
+});
+
+// Variables
+let name = "John";
+
+// Functions
+function greet() {
+  console.log("Hello, " + name);
+}
+greet();
+      </pre>
+    </div>
   </div>
 
 <script>
@@ -119,6 +309,58 @@ document.addEventListener("DOMContentLoaded", ()=>{
   // Shortcuts
   window.addEventListener('keydown', (e)=>{
     if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); run(); }
+  });
+
+  // Dropdown menu logic
+  const menuBtn = document.getElementById('menuBtn');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+
+  menuBtn.addEventListener('click', () => {
+    const isVisible = dropdownMenu.style.display === 'block';
+    dropdownMenu.style.display = isVisible ? 'none' : 'block';
+  });
+
+  // Close dropdown if clicked outside
+  window.addEventListener('click', (e) => {
+    if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.style.display = 'none';
+    }
+  });
+
+  // Handle dropdown item clicks
+  dropdownMenu.addEventListener('click', (e) => {
+    if (e.target.classList.contains('dropdown-item')) {
+      const action = e.target.dataset.action;
+      dropdownMenu.style.display = 'none';
+
+      if(action === 'read'){
+        document.getElementById('readModal').style.display = 'flex';
+      } else if(action === 'help'){
+        document.getElementById('helpModal').style.display = 'flex';
+      } else if(action === 'about'){
+        alert('This is an online HTML/CSS/JS editor.\nCreated by You!');
+      }
+    }
+  });
+
+  // Close modal handlers
+  document.getElementById('closeReadModalBtn').addEventListener('click', () => {
+    document.getElementById('readModal').style.display = 'none';
+  });
+  document.getElementById('closeHelpModalBtn').addEventListener('click', () => {
+    document.getElementById('helpModal').style.display = 'none';
+  });
+
+  // Close modals when clicking outside modal content
+  document.getElementById('readModal').addEventListener('click', (e) => {
+    if(e.target === e.currentTarget){
+      document.getElementById('readModal').style.display = 'none';
+    }
+  });
+  document.getElementById('helpModal').addEventListener('click', (e) => {
+    if(e.target === e.currentTarget){
+      document.getElementById('helpModal').style.display = 'none';
+    }
   });
 </script>
 </body>
